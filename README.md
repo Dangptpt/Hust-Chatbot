@@ -1,139 +1,208 @@
-# HUST RAG Chatbot
+# HUST Chatbot
 
-An intelligent RAG (Retrieval Augmented Generation) powered chatbot for Bach Khoa University, designed to assist students with inquiries about academic regulations, scholarships, training programs, documentation, and admissions.
+HUST Chatbot is an intelligent virtual assistant developed for Hanoi University of Science and Technology (HUST), utilizing the RAG (Retrieval-Augmented Generation) architecture to provide accurate and contextually appropriate responses.
 
 ## Features
 
-- 🤖 Automatic classification between chitchat and knowledge-based queries
-- 🔍 Information retrieval using vector similarity search
-- 💭 Context-aware responses based on conversation history
-- 📚 Supabase integration for document storage and retrieval
-- 🔄 Intelligent query expansion based on chat context
-- 🎯 High accuracy through semantic routing
-- 🚀 Modular and extensible architecture
-
-## Architecture
-
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────┐
-│    User     │────>│  Semantic   │────>│  Semantic   │────>│  LLMs   │
-│   Input     │     │   Cache     │     │   Router    │     │         │
-└─────────────┘     └─────────────┘     └─────────────┘     └─────────┘
-                          │                     │                  ▲
-                          │                     │                  │
-                          ▼                     ▼                  │
-                    ┌─────────────┐      ┌─────────────┐         │
-                    │   Vector    │<─────│  Reflection  │         │
-                    │  Database   │      └─────────────┘         │
-                    └─────────────┘             │                │
-                          │                     │                │
-                          │                     ▼                │
-                          └──────────────>┌─────────────┐       │
-                                         │    RAGs      │───────┘
-                                         │   System     │
-                                         └─────────────┘
-```
-
-## System Requirements
-
-- Python 3.8+
-- Supabase account
-- OpenAI API key
+- 🤖 Support for both casual conversation and information retrieval
+- 📚 Automatic question classification and query expansion
+- 🔍 Relevant information retrieval from database
+- 💬 User-friendly chat interface
+- ✨ Markdown support in messages
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/bk-rag-chatbot.git
-cd bk-rag-chatbot
+git clone [repository-url]
+cd hust-chatbot
 ```
 
-2. Install dependencies:
+2. Create and activate virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up environment variables:
-```bash
-cp .env.example .env
+4. Create `.env` file and configure environment variables:
 ```
-
-Edit the `.env` file with your credentials:
-```
-OPENAI_API_KEY=your_openai_key
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
+OPENAI_API_KEY=your_key_here
+SUPABASE_URL=your_url_here
+SUPABASE_KEY=your_key_here
+CACHE_FOLDER=path_to_cache_folder
 ```
 
 ## Project Structure
 
 ```
-bk-rag-chatbot/
-├── src/
-│   ├── base.py           # Abstract base classes
-│   ├── routers.py        # Question classification
-│   ├── retrievers.py     # Document retrieval
-│   ├── reflection.py     # Query expansion
-│   ├── responders.py     # Response generation
-│   └── chatbot.py        # Main chatbot class
-├── tests/
-│   └── ...              # Test files
+hust-chatbot/
+├── app.py                 # Entry point with Gradio interface
+├── base.py               # Abstract base classes
+├── chatbot.py            # Main chatbot implementation
+├── router.py             # Question classifier
+├── responder.py          # Response generators
+├── retrieval.py          # Document retrieval
+├── reflection.py         # Query expansion
 ├── requirements.txt      # Project dependencies
-├── .env                 # Environment variables
 └── README.md            # Project documentation
 ```
 
+## System Architecture
+
+The chatbot is built with a modular architecture consisting of main components:
+
+1. **Router**: Classifies questions as either "chitchat" or "query"
+2. **Retriever**: Searches for relevant documents from Supabase
+3. **Reflection**: Expands queries based on context
+4. **Responder**: 
+   - ChitchatResponder: Handles casual conversation
+   - RAGResponder: Generates responses based on retrieved information
+
 ## Usage
 
-### Component Extension
+Run the application:
+```bash
+python app.py
+```
 
-#### Adding a Custom Router
+Access the web interface at `http://localhost:7860`
+
+## Tech Stack
+
+- **Framework**: Gradio
+- **LLM**: OpenAI GPT
+- **Vector Database**: Supabase
+- **Embedding Model**: BAAI/bge-m3
+- **Other Libraries**:
+  - LangChain
+  - SentenceTransformers
+  - Python-dotenv
+  - PyVi
+
+## Development
+
+### Adding New Features
+
+1. Create new classes inheriting from abstract base classes in `base.py`
+2. Implement required abstract methods
+3. Register new components in `app.py`
+
+### Code Example
 
 ```python
-from src.base import BaseRouter
+# Example of implementing a custom router
+from base import BaseRouter
 
 class CustomRouter(BaseRouter):
     async def classify(self, question: str) -> str:
-        # Implement your custom classification logic
-        return "chitchat" or "rag"
+        # Implementation for question classification
+        return "query" if "what" in question.lower() else "chitchat"
 ```
 
-#### Adding a Custom Retriever
+### Testing
+
+```bash
+# Run tests
+python -m pytest tests/
+```
+
+## API Documentation
+
+### HustChatbot Class
 
 ```python
-from src.base import BaseRetriever
-from typing import List, Dict
-
-class CustomRetriever(BaseRetriever):
-    async def retrieve(self, query: str) -> List[Dict]:
-        # Implement your custom retrieval logic
-        return documents
+class HustChatbot:
+    def __init__(
+        self,
+        router: BaseRouter,
+        retriever: BaseRetriever,
+        reflection: BaseReflection,
+        chitchat_responder: BaseResponder,
+        rag_responder: BaseResponder
+    ):
+        """
+        Initialize the chatbot with its components.
+        
+        Args:
+            router: Component for question classification
+            retriever: Component for document retrieval
+            reflection: Component for query expansion
+            chitchat_responder: Component for casual conversation
+            rag_responder: Component for information retrieval responses
+        """
 ```
 
-## Testing
+### Message Format
 
-Run the test suite:
+```python
+@dataclass
+class Message:
+    content: str
+    type: str  # 'human' or 'ai'
+```
+
+## Configuration
+
+The system supports the following configuration options through environment variables:
+
 ```bash
-pytest tests/
+# OpenAI Configuration
+OPENAI_API_KEY=sk-xxx
+OPENAI_MODEL=gpt-3.5-turbo # Optional, defaults to gpt-3.5-turbo
+
+# Supabase Configuration
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_KEY=xxx
+
+# Model Cache
+CACHE_FOLDER=/path/to/cache # For storing embedding models
 ```
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+2. Create a new branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-### Development Guidelines
+## Requirements
 
-- Follow PEP 8 style guide
-- Add tests for new features
-- Update documentation accordingly
-- Use type hints
-- Keep components modular and single-responsibility
+```
+gradio>=4.0.0
+langchain>=0.1.0
+openai>=1.0.0
+python-dotenv>=1.0.0
+supabase>=1.0.0
+sentence-transformers>=2.2.2
+pyvi>=0.1.1
+```
 
-## Performance Optimization
+## Troubleshooting
 
-- Implement caching for frequent queries
-- Use batch
+Common issues and solutions:
+
+1. **OpenAI API Error**:
+   - Check if your API key is valid
+   - Ensure you have sufficient credits
+
+2. **Supabase Connection Error**:
+   - Verify your Supabase URL and key
+   - Check if the vector store is properly set up
+
+3. **Embedding Model Error**:
+   - Ensure CACHE_FOLDER is writable
+   - Check internet connection for model download
+
+## Acknowledgments
+
+- OpenAI for GPT models
+- Supabase for vector database
+- BAAI for embedding models
+- Gradio team for the UI framework

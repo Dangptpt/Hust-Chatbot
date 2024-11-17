@@ -106,6 +106,9 @@ pre code {
 .dark pre {
     background-color: #1e1e1e !important;
 }
+.contains-code {
+    width: 100% !important;
+}
 """
 
 # Create Gradio interface
@@ -121,12 +124,7 @@ with gr.Blocks(css=custom_css) as demo:
         container=True,
         bubble_full_width=False,
         type="messages",
-        code_highlight=True,  # Enable code highlighting
-        line_breaks=True,     # Respect line breaks
-        latex_delimiters=[    # Support LaTeX
-            {"left": "$$", "right": "$$", "display": True},
-            {"left": "$", "right": "$", "display": False},
-        ],
+        rtl=False,  # Ensure left-to-right text direction
     )
     
     with gr.Row():
@@ -135,7 +133,7 @@ with gr.Blocks(css=custom_css) as demo:
             show_label=False,
             placeholder="Nhập câu hỏi của bạn...",
             container=False,
-            lines=3  # Allow multiple lines input
+            lines=2  # Allow multiple lines input
         )
         submit_btn = gr.Button("Gửi", scale=1)
     
