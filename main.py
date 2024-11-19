@@ -4,7 +4,8 @@ from rag.retrieval import SupabaseRetriever
 from rag.responder import RAGResponder
 from reflection.reflection import LangchainReflection
 from rag.responder import ChitchatResponder
-from langchain.chat_models import ChatOpenAI
+from langchain_openai.chat_models import ChatOpenAI
+import asyncio
 
 async def main():
     # Initialize components
@@ -30,14 +31,12 @@ async def main():
     # Example usage
     questions = [
         "Vé gửi xe máy hết bao nhiêu tiền ?",
-        "xe đạp thì sao"
+        "xe đạp thì sao",
+        "chào em yêu, nay thời tiết thế nào",
     ]
     
     for question in questions:
-        print(f"\nNgười dùng: {question}")
         response = await chatbot.process_message(question)
-        print(f"Trợ lý: {response}")
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
