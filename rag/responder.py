@@ -22,16 +22,28 @@ class ChitchatResponder(BaseResponder):
             else AIMessage(content=msg.content)
             for msg in chat_history[-num_context*2:]
         ]
-        print(chat_history)
         
         return await self.chain.ainvoke({
             "question": question,
             "chat_history": formatted_history
         })
+
+    async def stream_respond(self, question: str, chat_history: List[Message], num_context: int = 2):
+        formatted_history = [
+            HumanMessage(content=msg.content) if msg.type == 'human' 
+            else AIMessage(content=msg.content)
+            for msg in chat_history[-num_context*2:]
+        ]
+        
+        async for chunk in self.chain.astream({
+            "question": question,
+            "chat_history": formatted_history
+        }):
+            yield chunk
     
 
 rag_responder_prompt = '''Dựa vào thông tin được cung cấp, hãy trả lời câu hỏi của người dùng
-Nếu không có đủ thông tin, hãy trả lời rằng bạn không biết
+Nếu không có đủ thông tin, hãy trả lời rằng bạn không biết và khuyến khích người dùng tìm kiếm thông tin trên trang web của trường
 Thông tin cung cấp:
 {context}
 
@@ -52,3 +64,10 @@ class RAGResponder(BaseResponder):
             "question": question,
             "context": context
         })
+    
+    async def stream_respond(self, question: str, chat_history: List[Message], context: str = ""):
+        async for chunk in self.chain.astream({
+            "question": question,
+            "context": context
+        }):
+            yield chunk
