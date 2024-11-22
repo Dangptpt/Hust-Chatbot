@@ -25,8 +25,16 @@ class HustChatbot:
 
     async def stream_process_message(self, message: str) -> AsyncGenerator[str, None]:
         logging.info(f"Question: {message}")
+        expanded_query = await self.reflection.expand_query(
+                question=message,
+                # prev_question=self.prev_question
+                chat_history=self.chat_history,
+            )
+            # self.prev_question = expanded_query
+        logging.info(f"Expanded query: {expanded_query}")
+
         query_type = await self.router.classify(
-            question=message,
+            question=expanded_query,
             chat_history=self.chat_history,
             num_context=self.num_contexts
         )
@@ -40,12 +48,6 @@ class HustChatbot:
                 yield chunk
             response = chunk  # Save final response
         else:
-            expanded_query = await self.reflection.expand_query(
-                question=message,
-                prev_question=self.prev_question
-            )
-            self.prev_question = expanded_query
-            logging.info(f"Expanded query: {expanded_query}")
             
             relevant_docs = await self.retriever.retrieve(expanded_query)
             context = ""

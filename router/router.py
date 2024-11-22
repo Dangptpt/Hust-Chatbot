@@ -6,9 +6,9 @@ from langchain_core.output_parsers import StrOutputParser
 from typing import List
 from langchain_core.messages import HumanMessage, AIMessage
 
-router_prompt = '''Từ lịch sử đoạn chat và câu hỏi mới nhất của người dùng Hãy phân loại câu hỏi của người dùng vào một trong hai loại:
-1. chitchat: Câu hỏi thông thường, chào hỏi, cảm ơn, thời tiết, v.v.
-2. rag: Câu hỏi cần tra cứu thông tin về quy chế, học bổng, đào tạo, giấy tờ, tuyển sinh, phí dịch vụ, v.v
+router_prompt = '''Từ lịch sử đoạn chat và câu hỏi của người dùng Hãy phân loại câu hỏi của người dùng vào một trong hai loại:
+1. chitchat: Câu hỏi thông thường, chào hỏi, cảm ơn, thời tiết, làm thơ v.v.
+2. rag: Câu hỏi cần tra cứu thông tin về quy chế, học bổng, đào tạo, giấy tờ, tuyển sinh, phí dịch vụ, hướng dẫn, thắc mắc,v.v
 
 Câu hỏi: {question}
 Phân loại (chỉ trả về "chitchat" hoặc "rag"):'''

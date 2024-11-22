@@ -43,11 +43,11 @@ class ChitchatResponder(BaseResponder):
     
 
 rag_responder_prompt = '''Dựa vào thông tin được cung cấp, hãy trả lời câu hỏi của người dùng
-Nếu không có đủ thông tin, hãy trả lời rằng bạn không biết và khuyến khích người dùng tìm kiếm thông tin trên trang web của trường
 Thông tin cung cấp:
 {context}
 
 Câu hỏi: {question}
+Nếu không có đủ thông tin để trả lời, hãy trả lời "Xin lỗi, hiện tôi chưa có thông tin về {{câu hỏi}}, bạn có thể tham khảo trên trang web của trường hoặc liên hệ với ban đào tạo để biết thêm thông tin chi tiết"
 '''
 
 class RAGResponder(BaseResponder):

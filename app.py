@@ -36,17 +36,23 @@ async def stream_response(message: str, history: List[Dict]) :
         yield history
         return
 
-    history = history + [[message, ""]]
+    history = history + [{"role": "user", "content": message}]
     response = ""
     
     try:
         async for chunk in chatbot.stream_process_message(message):
             response += chunk
-            history[-1][1] = response
+            if len(history) > 0 and history[-1]["role"] == "assistant":
+                history[-1]["content"] = response
+            else:
+                history.append({"role": "assistant", "content": response})
             yield history, ""
     except Exception as e:
         error_msg = f"Xin lỗi, đã có lỗi xảy ra: {str(e)}"
-        history[-1][1] = error_msg
+        if len(history) > 0 and history[-1]["role"] == "assistant":
+            history[-1]["content"] = error_msg
+        else:
+            history.append({"role": "assistant", "content": error_msg})
         yield history, ""
 
 def clear_history():
@@ -55,8 +61,26 @@ def clear_history():
     chatbot.prev_question = ""
     return None, None, []
 
-with gr.Blocks() as demo:
-    gr.Markdown("# HUST Chatbot\nChào mừng bạn đến với trợ lý ảo của trường Đại học Bách khoa Hà Nội!")
+# Create Blocks with custom title and favicon
+demo = gr.Blocks(
+    title="HUST",  # Custom tab title
+    css="""
+        footer {display: none !important;}
+        .gradio-container {min-height: 0px !important;}
+    """  # Hide Gradio footer and adjust container
+)
+
+with demo:
+    
+    gr.Markdown("""
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <img src="https://www.hust.edu.vn/uploads/sys/logo-dhbk-1.png" width="80" height="80">
+            <div>
+                <h1 style="margin: 0;">HUST Assistant</h1>
+                <p style="margin: 0;">Chào mừng bạn đến với trợ lý ảo của trường Đại học Bách khoa Hà Nội!</p>
+            </div>
+        </div>
+    """)
     
     chatbot_interface = gr.Chatbot(
         height=500,
@@ -64,7 +88,8 @@ with gr.Blocks() as demo:
         container=True,
         bubble_full_width=False,
         show_copy_button=True,
-        render_markdown=True
+        render_markdown=True,
+        type="messages"
     )
     
     with gr.Row():
@@ -98,4 +123,6 @@ with gr.Blocks() as demo:
 
 if __name__ == "__main__":
     demo.queue()
-    demo.launch(share=False)
+    demo.launch(
+        share=False,
+    )
