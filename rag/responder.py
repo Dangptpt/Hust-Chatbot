@@ -47,7 +47,7 @@ Thông tin cung cấp:
 {context}
 
 Câu hỏi: {question}
-Nếu không có đủ thông tin để trả lời, hãy trả lời "Xin lỗi, hiện tôi chưa có thông tin về {{câu hỏi}}, bạn có thể tham khảo trên trang web của trường hoặc liên hệ với ban đào tạo để biết thêm thông tin chi tiết"
+Lưu ý: Nếu không có đủ thông tin để trả lời, hãy in ra "Xin lỗi, hiện tôi chưa có thông tin về {{câu hỏi}}, bạn có thể tham khảo trên trang web của trường hoặc liên hệ với ban đào tạo để biết thêm thông tin chi tiết"
 '''
 
 class RAGResponder(BaseResponder):

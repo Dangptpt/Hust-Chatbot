@@ -18,7 +18,8 @@ class SupabaseRetriever(BaseRetriever):
         self.supabase : Client = get_supabase()
 
     async def retrieve(self, query: str, match_count=3, match_threshold=0.4) -> List[Dict]:
-        sentence = tokenize(query)
+        # sentence = tokenize(query)
+        sentence = query
         embedding = model.encode(sentence).tolist()
         response = self.supabase.rpc(
             'match_documents_v2',
