@@ -9,7 +9,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 class ChitchatResponder(BaseResponder):
     def __init__(self, llm: ChatOpenAI):
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "Bạn là trợ lý ảo của trường Đại học Bách khoa Hà Nội. Hãy trả lời thân thiện và ngắn gọn"),
+            ("system", "Bạn là trợ lý ảo của trường Đại học Bách khoa Hà Nội. Hãy trả lời thân thiện bằng tiếng Việt"),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{question}")
         ])
@@ -47,13 +47,12 @@ Thông tin cung cấp:
 {context}
 
 Câu hỏi: {question}
-Lưu ý: Nếu không có đủ thông tin để trả lời, hãy in ra "Xin lỗi, hiện tôi chưa có thông tin về {{câu hỏi}}, bạn có thể tham khảo trên trang web của trường hoặc liên hệ với ban đào tạo để biết thêm thông tin chi tiết"
-'''
+Lưu ý: Nếu bạn không tim thể trả lời từ những thông tin trên, hãy phản hồi "Xin lỗi, tôi chưa có thông tin về {{question}}" và hướng dẫn người dùng tìm kiên thêm thông tin'''
 
 class RAGResponder(BaseResponder):
     def __init__(self, llm: ChatOpenAI):
         prompt = ChatPromptTemplate.from_messages([
-            ("system", 'Bạn là trợ lý ảo của trường Đại học Bách khoa Hà Nội'),
+            ("system", "Bạn là trợ lý ảo của trường Đại học Bách khoa Hà Nội. Hãy trả lời thân thiện bằng tiếng Việt"),
             ("human", rag_responder_prompt)
         ])
         

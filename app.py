@@ -14,7 +14,7 @@ load_dotenv()
 
 llm = ChatOpenAI(
     model_name="gpt-4o-mini",
-    temperature=0
+    temperature=0.3
 )
 
 router = LangchainRouter(llm=llm)
@@ -61,50 +61,111 @@ def clear_history():
     chatbot.prev_question = ""
     return None, None, []
 
-# Create Blocks with custom title and favicon
+# Custom CSS for better styling
+custom_css = """
+    footer {display: none !important;}
+    .gradio-container {
+        min-height: 0px !important;
+        max-width: 1200px !important;
+        margin: auto !important;
+    }
+    .header-container {
+        background-color: #f5f5f5;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .header-text h1 {
+        color: #2d2d2d;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    .header-text p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+    .chat-container {
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .input-container {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0 0 10px 10px;
+    }
+    .submit-btn {
+        background-color: #007bff !important;
+        color: white !important;
+    }
+    .clear-btn {
+        background-color: #6c757d !important;
+        color: white !important;
+    }
+"""
+
+# Create Blocks with custom title and styling
 demo = gr.Blocks(
-    title="HUST",  # Custom tab title
-    css="""
-        footer {display: none !important;}
-        .gradio-container {min-height: 0px !important;}
-    """  # Hide Gradio footer and adjust container
+    title="HUST Assistant",
+    css=custom_css
 )
 
 with demo:
-    
+    # Header section with improved styling
     gr.Markdown("""
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <img src="https://www.hust.edu.vn/uploads/sys/logo-dhbk-1.png" width="80" height="80">
-            <div>
-                <h1 style="margin: 0;">HUST Assistant</h1>
-                <p style="margin: 0;">Chào mừng bạn đến với trợ lý ảo của trường Đại học Bách khoa Hà Nội!</p>
+        <div class="header-container">
+            <div class="header-content">
+                <img src="https://www.cio.com/wp-content/uploads/2023/08/chatbot_ai_machine-learning_emerging-tech-100778305-orig.jpg?resize=1024%2C683&quality=50&strip=all" width="100" height="100" style="border-radius: 50%;">
+                <div class="header-text">
+                    <h1>HUST Assistant</h1>
+                    <p>Chào mừng bạn đến với trợ lý ảo của trường Đại học Bách khoa Hà Nội!</p>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                        💡 Hãy đặt câu hỏi về thông tin tuyển sinh, cẩm nang sinh viên, hoặc các vấn đề khác liên quan đến trường.
+                    </p>
+                </div>
             </div>
         </div>
     """)
     
-    chatbot_interface = gr.Chatbot(
-        height=500,
-        show_label=False,
-        container=True,
-        bubble_full_width=False,
-        show_copy_button=True,
-        render_markdown=True,
-        type="messages"
-    )
-    
-    with gr.Row():
-        txt = gr.Textbox(
-            scale=4,
+    with gr.Column(elem_classes="chat-container"):
+        chatbot_interface = gr.Chatbot(
+            height=500,
             show_label=False,
-            placeholder="Nhập câu hỏi của bạn...",
-            container=False,
-            lines=1,
-            autofocus=True
+            container=True,
+            bubble_full_width=False,
+            show_copy_button=True,
+            render_markdown=True,
+            type="messages",
+            elem_classes="chat-messages"
         )
-        submit_btn = gr.Button("Gửi", scale=1)
+        
+        with gr.Column(elem_classes="input-container"):
+            with gr.Row():
+                txt = gr.Textbox(
+                    scale=4,
+                    show_label=False,
+                    placeholder="Nhập câu hỏi của bạn... (Nhấn Enter để gửi)",
+                    container=False,
+                    lines=2,
+                    autofocus=True,
+                    elem_classes="chat-input",
+                )
+                submit_btn = gr.Button("Gửi", scale=1, elem_classes="submit-btn")
+            
+            with gr.Row():
+                clear_btn = gr.Button(
+                    "🗑️ Xóa lịch sử", 
+                    variant="secondary",
+                    elem_classes="clear-btn"
+                )
     
-    clear_btn = gr.Button("Xóa lịch sử", variant="secondary")
-    
+    # Event handlers
     txt.submit(
         stream_response, 
         [txt, chatbot_interface], 
